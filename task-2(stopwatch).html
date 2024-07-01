@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body{
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-size: 50px;
+            text-align:center;
+            padding:50px;
+        }
+        button{
+            padding:20px;
+            border-radius: 100px;
+            margin:20px;
+            
+        }
+    </style>
+</head>
+<body>
+    <h1 id="display">00:00.00.00</h1>
+    <button onclick="start()" style="background-color: green;">Start</button>
+    <button onclick="stop()" style="background-color:red;">Stop</button>
+    <button onclick="reset()" style="background-color:yellow;">RESET</button>
+    <button onclick="lap()" style="background-color:black;color:white">LAP</button>
+    <ul id="laps"></ul>
+
+    <script>
+        let startTime = null;
+        let elapsedTime = 0;
+        let intervalId = null;
+        let laps = [];
+
+        function formatTime(time) {
+            let date = new Date(time);
+            let minutes = String(date.getUTCMinutes()).padStart(2, '0');
+            let seconds = String(date.getUTCSeconds()).padStart(2, '0');
+            let milliseconds = String(date.getUTCMilliseconds()).padStart(3, '0');
+            return `${minutes}:${seconds}.${milliseconds}`;
+        }
+
+        function update() {
+            let currentTime = elapsedTime + (startTime ? Date.now() - startTime : 0);
+            document.getElementById('display').textContent = formatTime(currentTime);
+        }
+
+        function start() {
+            if (startTime === null) {
+                startTime = Date.now();
+                intervalId = setInterval(update, 100); // Update every 10 milliseconds for smoother display
+            }}
+            function stop()
+            {if(startTime!=null) {
+                clearInterval(intervalId);
+                elapsedTime += Date.now() - startTime;
+                startTime = null;
+            }
+        }
+
+        function reset() {
+            clearInterval(intervalId);
+            startTime = null;
+            elapsedTime = 0;
+            laps = [];
+            document.getElementById('display').textContent = '00:00.000';
+            document.getElementById('laps').innerHTML = '';
+        }
+
+        function lap() {
+            if (startTime !== null) {
+                let lapTime = elapsedTime + (Date.now() - startTime);
+                laps.push(lapTime);
+                let lapElement = document.createElement('li');
+                lapElement.textContent = `Lap ${laps.length}: ${formatTime(lapTime)}`;
+                document.getElementById('laps').appendChild(lapElement);
+            }
+        }
+    </script>
+</body>
+</html>
